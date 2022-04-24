@@ -15,7 +15,6 @@ function startServer() {
 }
 
 const db = process.env.CONNECTION_STRING;
-console.log(process.env.CONNECTION_STRING);
 
 function startDatabase() {
   mongoose.connect(db, (err) => {
