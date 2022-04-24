@@ -4,6 +4,7 @@ const movieRouter = require("./controllers/movie");
 const userRouter = require("./controllers/user");
 const hallRouter = require("./controllers/hall");
 const reservationRouter = require("./controllers/reservation");
+const cors = require("cors");
 
 require("dotenv").config();
 
@@ -33,6 +34,7 @@ function initRouters() {
     res.header("Access-Control-Allow-Methods", "*");
     next();
   });
+  app.use(cors());
   app.use(express.json());
   app.use("/user", userRouter);
   app.use("/movie", movieRouter);
