@@ -10,6 +10,7 @@ const reservationSchema = new Schema({
   hallId: { type: mongoose.Schema.Types.ObjectId, ref: "Hall" },
   hallNumber: Number,
   movieName: String,
+  totalPrice: Number,
   createdAt: { type: Date, default: Date.now },
   modifiedAt: { type: Date, default: Date.now },
 });
