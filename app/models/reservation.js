@@ -8,6 +8,8 @@ const reservationSchema = new Schema({
   ticketsType: { normal: Number, reduced: Number },
   movieTiming: Date,
   hallId: { type: mongoose.Schema.Types.ObjectId, ref: "Hall" },
+  hallNumber: Number,
+  movieName: String,
   createdAt: { type: Date, default: Date.now },
   modifiedAt: { type: Date, default: Date.now },
 });
