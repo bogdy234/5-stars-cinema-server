@@ -58,7 +58,7 @@ const getAllHalls = (req, res) => {
 const readByNumber = (req, res) => {
   const value = req.query;
 
-  hallService.read(
+  hallService.readByNumber(
     value,
     (data) => res.status(201).json(data),
     (err) => res.status(400).json(err)
