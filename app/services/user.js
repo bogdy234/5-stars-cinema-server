@@ -71,6 +71,12 @@ const UserService = {
         }
       });
   },
+  findByName: (item, success, fail) => {
+    const filter = { firstName: item.firstName, lastName: item.lastName };
+    UserModel.find(filter)
+      .then((data) => success(data))
+      .catch((err) => fail(err));
+  },
 };
 
 module.exports = UserService;

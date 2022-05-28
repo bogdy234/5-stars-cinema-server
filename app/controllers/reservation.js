@@ -97,6 +97,20 @@ const getReservedSeats = (req, res) => {
   );
 };
 
+const findByName = (req, res) => {
+  const item = req.query;
+
+  reservationService.findByName(
+    item,
+    (data) => {
+      res.status(201).json(data);
+    },
+    (err) => {
+      res.status(400).json({ message: err });
+    }
+  );
+};
+
 reservationRouter.route("").post(createReservation);
 reservationRouter.route("").get(readReservation);
 reservationRouter.route("").put(updateReservation);
@@ -105,5 +119,6 @@ reservationRouter.route("/getAllReservations").get(getAllReservations);
 reservationRouter.route("/getUserReservations").get(getUserReservations);
 reservationRouter.route("/getMovieReservations").get(getMovieReservations);
 reservationRouter.route("/getReservedSeats").get(getReservedSeats);
+reservationRouter.route("/findByName").get(findByName);
 
 module.exports = reservationRouter;

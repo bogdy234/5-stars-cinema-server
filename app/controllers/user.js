@@ -91,6 +91,16 @@ const sendContactEmail = (req, res) => {
   );
 };
 
+const findByName = () => {
+  const value = req.query;
+
+  userService.findUserByName(
+    value,
+    (data) => res.status(201).json(data),
+    (err) => res.status(401).json(err)
+  );
+};
+
 userRouter.route("").post(createUser);
 userRouter.route("").get(readUser);
 userRouter.route("").put(updateUser);
@@ -98,5 +108,6 @@ userRouter.route("").delete(deleteUser);
 userRouter.route("/login").post(loginUser);
 userRouter.route("/register").post(registerUser);
 userRouter.route("/contact").post(sendContactEmail);
+userRouter.route("/findByName").post(findByName);
 
 module.exports = userRouter;
