@@ -59,17 +59,9 @@ const UserService = {
       .sendEmail(item.name, item.email, item.subject, item.message)
       .then((r) => {
         console.log(r);
-        try {
-          if (r.includes("sent")) {
-            success();
-          } else {
-            fail();
-          }
-        } catch (err) {
-          console.log(err);
-          fail();
-        }
-      });
+        success();
+      })
+      .catch((err) => fail(err));
   },
   findByName: (item, success, fail) => {
     const filter = { firstName: item.firstName, lastName: item.lastName };
