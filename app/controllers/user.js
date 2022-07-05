@@ -1,4 +1,5 @@
 const express = require("express");
+const userHelpers = require("../helpers/user");
 const userService = require("../services/user");
 
 const userRouter = express.Router();
@@ -23,8 +24,19 @@ const readUser = (req, res) => {
   );
 };
 
-const updateUser = (req, res) => {
-  const value = req.body;
+const updateUser = async (req, res) => {
+  let value = req.body;
+  if (value.updatedValue.password) {
+    value = {
+      ...value,
+      updatedValue: {
+        ...value.updatedValue,
+        password: await userHelpers.hashPasswordAsync(
+          value.updatedValue.password
+        ),
+      },
+    };
+  }
 
   userService.update(
     value,
