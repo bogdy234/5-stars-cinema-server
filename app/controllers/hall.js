@@ -1,11 +1,11 @@
 const express = require("express");
 const hallService = require("../services/hall");
+const { onlyAdminsRoute } = require("../middleware/user");
 
 const hallRouter = express.Router();
 
 function createHall(request, response) {
   const value = request.body;
-
   hallService.create(
     value,
     (data) => response.status(201).json(data),
@@ -65,10 +65,10 @@ const readByNumber = (req, res) => {
   );
 };
 
-hallRouter.route("").post(createHall);
+hallRouter.route("").post(onlyAdminsRoute, createHall);
 hallRouter.route("").get(readHall);
-hallRouter.route("").put(updateHall);
-hallRouter.route("").delete(deleteHall);
+hallRouter.route("").put(onlyAdminsRoute, updateHall);
+hallRouter.route("").delete(onlyAdminsRoute, deleteHall);
 hallRouter.route("/getAllHalls").get(getAllHalls);
 hallRouter.route("/readByNumber").get(readByNumber);
 

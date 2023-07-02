@@ -1,6 +1,8 @@
 const UserModel = require("../models/user");
 const userHelpers = require("../helpers/user");
+const helpers = require("../helpers/index");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const UserService = {
   create: async (item, success, fail) => {
@@ -43,8 +45,13 @@ const UserService = {
           const cmp = await bcrypt.compare(item.password, data.password);
           if (cmp) {
             const { password, ...returnData } = data._doc;
+            const tokenProps = helpers.removeProperties(returnData, [
+              "cardNumber",
+              "phoneNumber",
+            ]);
+            const token = jwt.sign(tokenProps, process.env.JWT_SECRET);
 
-            success(returnData);
+            success(returnData, token);
           } else {
             throw Error("Wrong username or password.");
           }

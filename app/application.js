@@ -4,6 +4,7 @@ const movieRouter = require("./controllers/movie");
 const userRouter = require("./controllers/user");
 const hallRouter = require("./controllers/hall");
 const reservationRouter = require("./controllers/reservation");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 require("dotenv").config();
@@ -28,14 +29,14 @@ function startDatabase() {
 }
 
 function initRouters() {
-  app.use(cors());
-  app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "*");
-    res.header("Access-Control-Allow-Methods", "*");
-    next();
-  });
+  app.use(
+    cors({
+      credentials: true,
+      origin: "http://localhost:3000",
+    })
+  );
   app.use(express.json());
+  app.use(cookieParser());
   app.use("/user", userRouter);
   app.use("/movie", movieRouter);
   app.use("/hall", hallRouter);

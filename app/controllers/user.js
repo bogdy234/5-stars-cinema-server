@@ -61,12 +61,18 @@ const loginUser = (req, res) => {
 
   userService.login(
     value,
-    (data) =>
-      res.status(201).json({
-        message: data ? "Login Success! Redirecting..." : "Login failed!",
-        valid: true,
-        data,
-      }),
+    (data, token) =>
+      res
+        .cookie("user_session", token, {
+          maxAge: 900000,
+          httpOnly: true,
+        })
+        .status(201)
+        .json({
+          message: data ? "Login Success! Redirecting..." : "Login failed!",
+          valid: true,
+          data,
+        }),
     (error) =>
       res.status(400).json({
         message: "Incorrect username or password.",
