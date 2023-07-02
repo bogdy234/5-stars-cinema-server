@@ -2,7 +2,7 @@ import { model, Schema } from "mongoose";
 
 import type { Document } from "mongoose";
 
-export interface IHall extends Document {
+export interface IHall {
   number: number;
   rows: number;
   columns: number;

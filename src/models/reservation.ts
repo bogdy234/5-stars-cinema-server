@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 import type { Document, ObjectId } from "mongoose";
 
-export interface IReservation extends Document {
+export interface IReservation {
   userId: ObjectId;
   movieId: ObjectId;
   bookedSeats: Array<{ row: number; column: number }>;

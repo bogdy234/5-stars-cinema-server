@@ -2,7 +2,7 @@ import { model, Schema } from "mongoose";
 
 import type { Document } from "mongoose";
 
-export interface IMovie extends Document {
+export interface IMovie {
   title: string;
   description: string;
   length: number;
