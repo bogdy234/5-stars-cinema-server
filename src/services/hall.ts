@@ -1,47 +1,57 @@
 import HallModel from "../models/hall";
+import { type PromiseIServiceResponse } from "../types";
+import NotFoundError from "../error/not-found";
 
 import type { IHall } from "../models/hall";
 
-const create = (item: IHall, success, fail): void => {
-  HallModel.create(item)
-    .then((data) => success(data))
-    .catch((error) => fail(error));
-};
-const read = (item, success, fail): void => {
-  const filterQuery = { _id: item.id };
+const create = async (item: IHall): Promise<IHall> => {
+    const data = await HallModel.create(item);
 
-  HallModel.find(filterQuery)
-    .then((data) => success(data))
-    .catch((error) => fail(error));
+    return data;
 };
-const update = (item, success, fail): void => {
-  const filterQuery = { _id: item.id };
 
-  // options { new: true } to return the updated data intead of old data
-  HallModel.findOneAndUpdate(filterQuery, item.updatedValue, {
-    new: true,
-  })
-    .then((data) => success(data))
-    .catch((error) => fail(error));
+const read = async (id: string): Promise<IHall> => {
+    const response = await HallModel.findById(id);
+    if (!response) {
+        throw new NotFoundError("Hall not found");
+    }
+    return response;
 };
-const deleteOne = (item, success, fail): void => {
-  const query = { _id: item.id };
 
-  HallModel.deleteOne(query, item)
-    .then((data) => success(data))
-    .catch((error) => fail(error));
+const update = async (item: { id: number; updatedValue: Partial<IHall> }): Promise<IHall> => {
+    const filterQuery = { _id: item.id };
+    // options { new: true } to return the updated data intead of old data
+    const data = await HallModel.findOneAndUpdate(filterQuery, item.updatedValue, {
+        new: true,
+    });
+    if (!data) {
+        throw new NotFoundError("Hall not found");
+    }
+    return data;
 };
-const getAllHalls = (success, fail): void => {
-  HallModel.find({})
-    .then((data) => success(data))
-    .catch((error) => fail(error));
-};
-const readByNumber = (item, success, fail): void => {
-  const filterQuery = { number: item.number };
 
-  HallModel.find(filterQuery)
-    .then((data) => success(data))
-    .catch((error) => fail(error));
+const deleteOne = async (id: number): Promise<string> => {
+    const response = await HallModel.deleteOne({ _id: id });
+
+    if (response.deletedCount === 0) {
+        throw new NotFoundError("Hall not found");
+    }
+
+    return `Entry with id ${id} successfully deleted!`;
+};
+
+const getAllHalls = async (): PromiseIServiceResponse<IHall[]> => {
+    const response = await HallModel.find({});
+    return { data: response };
+};
+
+const readByNumber = async (item: { number: number }): Promise<IHall> => {
+    const filterQuery = { number: item.number };
+    const data = await HallModel.findOne(filterQuery);
+    if (!data) {
+        throw new NotFoundError("Hall not found");
+    }
+    return data;
 };
 
 export default { create, read, update, deleteOne, getAllHalls, readByNumber };
