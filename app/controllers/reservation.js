@@ -1,5 +1,6 @@
 const express = require("express");
 const reservationService = require("../services/reservation");
+const { onlyAdminsRoute } = require("../middleware/user");
 
 const reservationRouter = express.Router();
 
@@ -115,7 +116,9 @@ reservationRouter.route("").post(createReservation);
 reservationRouter.route("").get(readReservation);
 reservationRouter.route("").put(updateReservation);
 reservationRouter.route("").delete(deleteReservation);
-reservationRouter.route("/getAllReservations").get(getAllReservations);
+reservationRouter
+  .route("/getAllReservations")
+  .get(onlyAdminsRoute, getAllReservations);
 reservationRouter.route("/getUserReservations").get(getUserReservations);
 reservationRouter.route("/getMovieReservations").get(getMovieReservations);
 reservationRouter.route("/getReservedSeats").get(getReservedSeats);
