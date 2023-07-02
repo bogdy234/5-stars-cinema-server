@@ -8,7 +8,7 @@ function createHall(request, response) {
   const value = request.body;
   hallService.create(
     value,
-    (data) => response.status(201).json(data),
+    (data) => response.status(200).json(data),
     (err) => response.status(400).json(err)
   );
 }
@@ -18,7 +18,7 @@ const readHall = (req, res) => {
 
   hallService.read(
     value,
-    (data) => res.status(201).json(data),
+    (data) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
@@ -28,7 +28,7 @@ const updateHall = (req, res) => {
 
   hallService.update(
     value,
-    (data) => res.status(201).json(data),
+    (data) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
@@ -39,7 +39,7 @@ const deleteHall = (req, res) => {
   hallService.delete(
     value,
     () =>
-      res.status(201).json({ message: "Successfully Deleted!", deleted: true }),
+      res.status(200).json({ message: "Successfully Deleted!", deleted: true }),
     (err) => res.status(400).json({ message: err, deleted: false })
   );
 };
@@ -47,7 +47,7 @@ const deleteHall = (req, res) => {
 const getAllHalls = (req, res) => {
   hallService.getAllHalls(
     (data) => {
-      res.status(201).json(data);
+      res.status(200).json(data);
     },
     (err) => {
       res.status(400).json({ message: err });
@@ -60,7 +60,7 @@ const readByNumber = (req, res) => {
 
   hallService.readByNumber(
     value,
-    (data) => res.status(201).json(data),
+    (data) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };

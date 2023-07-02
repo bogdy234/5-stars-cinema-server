@@ -9,7 +9,7 @@ function createReservation(request, response) {
 
   reservationService.create(
     value,
-    (data) => response.status(201).json(data),
+    (data) => response.status(200).json(data),
     (err) => response.status(400).json(err)
   );
 }
@@ -19,7 +19,7 @@ const readReservation = (req, res) => {
 
   reservationService.read(
     value,
-    (data) => res.status(201).json(data),
+    (data) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
@@ -29,7 +29,7 @@ const updateReservation = (req, res) => {
 
   reservationService.update(
     value,
-    (data) => res.status(201).json(data),
+    (data) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
@@ -40,7 +40,7 @@ const deleteReservation = (req, res) => {
   reservationService.delete(
     value,
     () =>
-      res.status(201).json({ message: "Successfully Deleted!", deleted: true }),
+      res.status(200).json({ message: "Successfully Deleted!", deleted: true }),
     (err) => res.status(400).json({ message: err, deleted: false })
   );
 };
@@ -48,7 +48,7 @@ const deleteReservation = (req, res) => {
 const getAllReservations = (req, res) => {
   reservationService.getAllReservations(
     (data) => {
-      res.status(201).json(data);
+      res.status(200).json(data);
     },
     (err) => {
       res.status(400).json({ message: err });
@@ -62,7 +62,7 @@ const getUserReservations = (req, res) => {
   reservationService.getUserReservations(
     item,
     (data) => {
-      res.status(201).json(data);
+      res.status(200).json(data);
     },
     (err) => {
       res.status(400).json({ message: err });
@@ -76,7 +76,7 @@ const getMovieReservations = (req, res) => {
   reservationService.getMovieReservations(
     item,
     (data) => {
-      res.status(201).json(data);
+      res.status(200).json(data);
     },
     (err) => {
       res.status(400).json({ message: err });
@@ -90,7 +90,7 @@ const getReservedSeats = (req, res) => {
   reservationService.getReservedSeats(
     item,
     (data) => {
-      res.status(201).json(data);
+      res.status(200).json(data);
     },
     (err) => {
       res.status(400).json({ message: err });
@@ -104,7 +104,7 @@ const findByName = (req, res) => {
   reservationService.findByName(
     item,
     (data) => {
-      res.status(201).json(data);
+      res.status(200).json(data);
     },
     (err) => {
       res.status(400).json({ message: err });

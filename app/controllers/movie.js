@@ -9,7 +9,7 @@ function createMovie(request, response) {
 
   movieService.create(
     value,
-    (data) => response.status(201).json(data),
+    (data) => response.status(200).json(data),
     (err) => response.status(400).json(err)
   );
 }
@@ -19,7 +19,7 @@ const readMovie = (req, res) => {
 
   movieService.read(
     value,
-    (data) => res.status(201).json(data),
+    (data) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
@@ -29,7 +29,7 @@ const updateMovie = (req, res) => {
 
   movieService.update(
     value,
-    (data) => res.status(201).json(data),
+    (data) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
@@ -40,7 +40,7 @@ const deleteMovie = (req, res) => {
   movieService.delete(
     value,
     () =>
-      res.status(201).json({ message: "Successfully Deleted!", deleted: true }),
+      res.status(200).json({ message: "Successfully Deleted!", deleted: true }),
     (err) => res.status(400).json({ message: err, deleted: false })
   );
 };
@@ -48,7 +48,7 @@ const deleteMovie = (req, res) => {
 const getAllMovies = (req, res) => {
   movieService.getAllMovies(
     (data) => {
-      res.status(201).json(data);
+      res.status(200).json(data);
     },
     (err) => {
       res.status(400).json({ message: err });
