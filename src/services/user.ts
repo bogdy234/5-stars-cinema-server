@@ -1,12 +1,17 @@
-const UserModel = require("../models/user");
-const userHelpers = require("../helpers/user");
-const helpers = require("../helpers/index");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+import UserModel from "../models/user";
+import userHelpers from "../helpers/user";
+import helpers from "../helpers/index";
 
 const UserService = {
   create: async (item, success, fail) => {
-    item.password = await userHelpers.hashPasswordAsync(item.password);
+    try {
+      item.password = await userHelpers.hashPasswordAsync(item.password);
+    } catch (err) {
+      console.log(err);
+    }
 
     UserModel.create(item)
       .then((data) => success(data))
@@ -41,15 +46,18 @@ const UserService = {
 
     UserModel.findOne(query)
       .then(async (data) => {
-        if (data) {
+        if (data !== undefined && data !== null) {
           const cmp = await bcrypt.compare(item.password, data.password);
           if (cmp) {
+            if (data._doc === undefined) {
+              return;
+            }
             const { password, ...returnData } = data._doc;
             const tokenProps = helpers.removeProperties(returnData, [
               "cardNumber",
               "phoneNumber",
             ]);
-            const token = jwt.sign(tokenProps, process.env.JWT_SECRET);
+            const token = jwt.sign(tokenProps, process.env.JWT_SECRET ?? "");
 
             success(returnData, token);
           } else {
@@ -78,4 +86,4 @@ const UserService = {
   },
 };
 
-module.exports = UserService;
+export default UserService;

@@ -1,40 +1,44 @@
-const express = require("express");
-const reservationService = require("../services/reservation");
-const { onlyAdminsRoute } = require("../middleware/user");
+import { Router } from "express";
 
-const reservationRouter = express.Router();
+import reservationService from "../services/reservation";
+import { onlyAdminsRoute } from "../middleware/user";
 
-function createReservation(request, response) {
-  const value = request.body;
+import type { IReservation } from "../models/reservation";
+import type { Request, Response } from "express";
+
+const reservationRouter = Router();
+
+function createReservation(req: Request, res: Response): void {
+  const value = req.body;
 
   reservationService.create(
     value,
-    (data) => response.status(200).json(data),
-    (err) => response.status(400).json(err)
+    (data: IReservation) => res.status(200).json(data),
+    (err) => res.status(400).json(err)
   );
 }
 
-const readReservation = (req, res) => {
+const readReservation = (req: Request, res: Response): void => {
   const value = req.query;
 
   reservationService.read(
     value,
-    (data) => res.status(200).json(data),
+    (data: IReservation) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
 
-const updateReservation = (req, res) => {
+const updateReservation = (req: Request, res: Response): void => {
   const value = req.body;
 
   reservationService.update(
     value,
-    (data) => res.status(200).json(data),
+    (data: IReservation) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
 
-const deleteReservation = (req, res) => {
+const deleteReservation = (req: Request, res: Response): void => {
   const value = req.query;
 
   reservationService.delete(
@@ -45,9 +49,9 @@ const deleteReservation = (req, res) => {
   );
 };
 
-const getAllReservations = (req, res) => {
+const getAllReservations = (req: Request, res: Response): void => {
   reservationService.getAllReservations(
-    (data) => {
+    (data: IReservation[]) => {
       res.status(200).json(data);
     },
     (err) => {
@@ -56,12 +60,12 @@ const getAllReservations = (req, res) => {
   );
 };
 
-const getUserReservations = (req, res) => {
+const getUserReservations = (req: Request, res: Response): void => {
   const item = req.query;
 
   reservationService.getUserReservations(
     item,
-    (data) => {
+    (data: IReservation) => {
       res.status(200).json(data);
     },
     (err) => {
@@ -70,7 +74,7 @@ const getUserReservations = (req, res) => {
   );
 };
 
-const getMovieReservations = (req, res) => {
+const getMovieReservations = (req: Request, res: Response): void => {
   const item = req.body;
 
   reservationService.getMovieReservations(
@@ -84,7 +88,7 @@ const getMovieReservations = (req, res) => {
   );
 };
 
-const getReservedSeats = (req, res) => {
+const getReservedSeats = (req: Request, res: Response): void => {
   const item = req.query;
 
   reservationService.getReservedSeats(
@@ -98,7 +102,7 @@ const getReservedSeats = (req, res) => {
   );
 };
 
-const findByName = (req, res) => {
+const findByName = (req: Request, res: Response): void => {
   const item = req.query;
 
   reservationService.findByName(
@@ -124,4 +128,4 @@ reservationRouter.route("/getMovieReservations").get(getMovieReservations);
 reservationRouter.route("/getReservedSeats").get(getReservedSeats);
 reservationRouter.route("/findByName").get(findByName);
 
-module.exports = reservationRouter;
+export default reservationRouter;

@@ -1,40 +1,42 @@
-const express = require("express");
-const movieService = require("../services/movie");
-const { onlyAdminsRoute } = require("../middleware/user");
+import { Router, type Request, type Response } from "express";
 
-const movieRouter = express.Router();
+import movieService from "../services/movie";
+import { onlyAdminsRoute } from "../middleware/user";
+import { type IMovie } from "../models/movie";
 
-function createMovie(request, response) {
-  const value = request.body;
+const movieRouter = Router();
+
+function createMovie(req: Request, res: Response): void {
+  const value = req.body;
 
   movieService.create(
     value,
-    (data) => response.status(200).json(data),
-    (err) => response.status(400).json(err)
+    (data: IMovie) => res.status(200).json(data),
+    (err) => res.status(400).json(err)
   );
 }
 
-const readMovie = (req, res) => {
+const readMovie = (req: Request, res: Response): void => {
   const value = req.query;
 
   movieService.read(
     value,
-    (data) => res.status(200).json(data),
+    (data: IMovie) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
 
-const updateMovie = (req, res) => {
+const updateMovie = (req: Request, res: Response): void => {
   const value = req.body;
 
   movieService.update(
     value,
-    (data) => res.status(200).json(data),
+    (data: IMovie) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
 
-const deleteMovie = (req, res) => {
+const deleteMovie = (req: Request, res: Response): void => {
   const value = req.query;
 
   movieService.delete(
@@ -45,9 +47,9 @@ const deleteMovie = (req, res) => {
   );
 };
 
-const getAllMovies = (req, res) => {
+const getAllMovies = (req: Request, res: Response): void => {
   movieService.getAllMovies(
-    (data) => {
+    (data: IMovie[]) => {
       res.status(200).json(data);
     },
     (err) => {
@@ -62,4 +64,4 @@ movieRouter.route("").put(onlyAdminsRoute, updateMovie);
 movieRouter.route("").delete(onlyAdminsRoute, deleteMovie);
 movieRouter.route("/getAllMovies").get(getAllMovies);
 
-module.exports = movieRouter;
+export default movieRouter;

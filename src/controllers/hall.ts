@@ -1,42 +1,46 @@
-const express = require("express");
-const hallService = require("../services/hall");
-const { onlyAdminsRoute } = require("../middleware/user");
+import { Router } from "express";
 
-const hallRouter = express.Router();
+import hallService from "../services/hall";
+import { type IHall } from "../models/hall";
+import { onlyAdminsRoute } from "../middleware/user";
 
-function createHall(request, response) {
-  const value = request.body;
+import type { Request, Response } from "express";
+
+const hallRouter = Router();
+
+function createHall(req: Request, res: Response): void {
+  const value = req.body;
   hallService.create(
     value,
-    (data) => response.status(200).json(data),
-    (err) => response.status(400).json(err)
+    (data: IHall) => res.status(200).json(data),
+    (err) => res.status(400).json(err)
   );
 }
 
-const readHall = (req, res) => {
+const readHall = (req: Request, res: Response): void => {
   const value = req.query;
 
   hallService.read(
     value,
-    (data) => res.status(200).json(data),
+    (data: IHall) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
 
-const updateHall = (req, res) => {
+const updateHall = (req: Request, res: Response): void => {
   const value = req.body;
 
   hallService.update(
     value,
-    (data) => res.status(200).json(data),
+    (data: IHall) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
 
-const deleteHall = (req, res) => {
+const deleteHall = (req: Request, res: Response): void => {
   const value = req.query;
 
-  hallService.delete(
+  hallService.deleteOne(
     value,
     () =>
       res.status(200).json({ message: "Successfully Deleted!", deleted: true }),
@@ -44,9 +48,9 @@ const deleteHall = (req, res) => {
   );
 };
 
-const getAllHalls = (req, res) => {
+const getAllHalls = (req: Request, res: Response): void => {
   hallService.getAllHalls(
-    (data) => {
+    (data: IHall[]) => {
       res.status(200).json(data);
     },
     (err) => {
@@ -55,12 +59,12 @@ const getAllHalls = (req, res) => {
   );
 };
 
-const readByNumber = (req, res) => {
+const readByNumber = (req: Request, res: Response): void => {
   const value = req.query;
 
   hallService.readByNumber(
     value,
-    (data) => res.status(200).json(data),
+    (data: IHall) => res.status(200).json(data),
     (err) => res.status(400).json(err)
   );
 };
@@ -72,4 +76,4 @@ hallRouter.route("").delete(onlyAdminsRoute, deleteHall);
 hallRouter.route("/getAllHalls").get(getAllHalls);
 hallRouter.route("/readByNumber").get(readByNumber);
 
-module.exports = hallRouter;
+export default hallRouter;

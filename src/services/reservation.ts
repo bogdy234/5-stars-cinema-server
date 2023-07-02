@@ -1,6 +1,7 @@
-const ReservationModel = require("../models/reservation");
-const { ObjectId } = require("mongodb");
-const UserModel = require("../models/user");
+import { ObjectId } from "mongodb";
+
+import ReservationModel from "../models/reservation";
+import UserModel from "../models/user";
 
 const ReservationService = {
   create: (item, success, fail) => {
@@ -39,7 +40,7 @@ const ReservationService = {
   },
   getUserReservations: (item, success, fail) => {
     const { userId } = item;
-    const filterQuery = { userId: ObjectId(userId) };
+    const filterQuery = { userId: new ObjectId(userId) };
 
     ReservationModel.find(filterQuery)
       .then((data) => success(data))
@@ -48,7 +49,7 @@ const ReservationService = {
   getMovieReservations: (item, success, fail) => {
     const { movieId, hallId, movieTiming } = item;
     const filterQuery = {
-      movieId: ObjectId(movieId),
+      movieId: new ObjectId(movieId),
       hallId,
       movieTiming: new Date(movieTiming).toISOString(),
     };
@@ -60,15 +61,15 @@ const ReservationService = {
   getReservedSeats: (item, success, fail) => {
     const { movieId, movieTiming, hallId } = item;
     const filterQuery = {
-      movieId: ObjectId(movieId),
+      movieId: new ObjectId(movieId),
       hallId,
       movieTiming: new Date(movieTiming).toISOString(),
     };
 
     ReservationModel.find(filterQuery)
       .then((data) => {
-        const newArray = [];
-        data.map((entry) => {
+        const newArray: any = [];
+        data.forEach((entry) => {
           newArray.push(entry.bookedSeats);
         });
         return newArray.flat();
@@ -77,7 +78,7 @@ const ReservationService = {
       .catch((error) => fail(error));
   },
   findByName: (item, success, fail) => {
-    let filter = { firstName: item.firstName, lastName: item.lastName };
+    let filter = { firstName: item.firstName, lastName: item.lastName } as any;
     UserModel.find(filter)
       .then((data) => {
         return data;
@@ -95,4 +96,4 @@ const ReservationService = {
   },
 };
 
-module.exports = ReservationService;
+export default ReservationService;

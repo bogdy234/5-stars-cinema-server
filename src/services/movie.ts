@@ -1,15 +1,15 @@
-const HallModel = require("../models/hall");
+import MovieModel from "../models/movie";
 
-const HallService = {
+const MovieService = {
   create: (item, success, fail) => {
-    HallModel.create(item)
+    MovieModel.create(item)
       .then((data) => success(data))
       .catch((error) => fail(error));
   },
   read: (item, success, fail) => {
     const filterQuery = { _id: item.id };
 
-    HallModel.find(filterQuery)
+    MovieModel.find(filterQuery)
       .then((data) => success(data))
       .catch((error) => fail(error));
   },
@@ -17,7 +17,7 @@ const HallService = {
     const filterQuery = { _id: item.id };
 
     // options { new: true } to return the updated data intead of old data
-    HallModel.findOneAndUpdate(filterQuery, item.updatedValue, {
+    MovieModel.findOneAndUpdate(filterQuery, item.updatedValue, {
       new: true,
     })
       .then((data) => success(data))
@@ -26,22 +26,15 @@ const HallService = {
   delete: (item, success, fail) => {
     const query = { _id: item.id };
 
-    HallModel.deleteOne(query, item)
+    MovieModel.deleteOne(query, item)
       .then((data) => success(data))
       .catch((error) => fail(error));
   },
-  getAllHalls: (success, fail) => {
-    HallModel.find({})
-      .then((data) => success(data))
-      .catch((error) => fail(error));
-  },
-  readByNumber: (item, success, fail) => {
-    const filterQuery = { number: item.number };
-
-    HallModel.find(filterQuery)
+  getAllMovies: (success, fail) => {
+    MovieModel.find({})
       .then((data) => success(data))
       .catch((error) => fail(error));
   },
 };
 
-module.exports = HallService;
+export default MovieService;

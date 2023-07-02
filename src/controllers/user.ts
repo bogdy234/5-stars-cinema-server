@@ -1,20 +1,21 @@
-const express = require("express");
-const userHelpers = require("../helpers/user");
-const userService = require("../services/user");
+import { Router, type Request, type Response } from "express";
 
-const userRouter = express.Router();
+import userHelpers from "../helpers/user";
+import userService from "../services/user";
 
-function createUser(req, res) {
+const userRouter = Router();
+
+function createUser(req: Request, res: Response): void {
   const value = req.body;
 
-  userService.create(
+  void userService.create(
     value,
     (data) => res.status(200).json(data),
     (error) => res.status(400).json(error)
   );
 }
 
-const readUser = (req, res) => {
+const readUser = (req: Request, res: Response): void => {
   const value = req.query;
 
   userService.read(
@@ -24,16 +25,16 @@ const readUser = (req, res) => {
   );
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req: Request, res: Response): Promise<void> => {
   let value = req.body;
-  if (value.updatedValue.password) {
+
+  const updatedPassword: string | undefined = value.updatedValue.password;
+  if (updatedPassword !== undefined) {
     value = {
       ...value,
       updatedValue: {
         ...value.updatedValue,
-        password: await userHelpers.hashPasswordAsync(
-          value.updatedValue.password
-        ),
+        password: await userHelpers.hashPasswordAsync(updatedPassword),
       },
     };
   }
@@ -45,7 +46,7 @@ const updateUser = async (req, res) => {
   );
 };
 
-const deleteUser = (req, res) => {
+const deleteUser = (req: Request, res: Response): void => {
   const value = req.query;
 
   userService.delete(
@@ -56,7 +57,7 @@ const deleteUser = (req, res) => {
   );
 };
 
-const loginUser = (req, res) => {
+const loginUser = (req: Request, res: Response): void => {
   const value = req.body;
 
   userService.login(
@@ -69,7 +70,10 @@ const loginUser = (req, res) => {
         })
         .status(200)
         .json({
-          message: data ? "Login Success! Redirecting..." : "Login failed!",
+          message:
+            data !== undefined
+              ? "Login Success! Redirecting..."
+              : "Login failed!",
           valid: true,
           data,
         }),
@@ -82,10 +86,10 @@ const loginUser = (req, res) => {
   );
 };
 
-const registerUser = (req, res) => {
+const registerUser = (req: Request, res: Response): void => {
   const value = req.body;
 
-  userService.create(
+  void userService.create(
     value,
     () =>
       res.status(200).json({ message: "Register successfully!", valid: true }),
@@ -98,7 +102,7 @@ const registerUser = (req, res) => {
   );
 };
 
-const sendContactEmail = (req, res) => {
+const sendContactEmail = (req: Request, res: Response): void => {
   const value = req.body;
 
   userService.sendContactEmail(
@@ -109,10 +113,10 @@ const sendContactEmail = (req, res) => {
   );
 };
 
-const findByName = () => {
+const findByName = (req: Request, res: Response): void => {
   const value = req.query;
 
-  userService.findUserByName(
+  userService.findByName(
     value,
     (data) => res.status(200).json(data),
     (err) => res.status(401).json(err)
@@ -121,11 +125,13 @@ const findByName = () => {
 
 userRouter.route("").post(createUser);
 userRouter.route("").get(readUser);
-userRouter.route("").put(updateUser);
+userRouter.route("").put((req, res) => {
+  void updateUser(req, res);
+});
 userRouter.route("").delete(deleteUser);
 userRouter.route("/login").post(loginUser);
 userRouter.route("/register").post(registerUser);
 userRouter.route("/contact").post(sendContactEmail);
 userRouter.route("/findByName").post(findByName);
 
-module.exports = userRouter;
+export default userRouter;
