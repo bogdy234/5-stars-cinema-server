@@ -1,40 +1,44 @@
+import NotFoundError from "../error/not-found";
 import MovieModel from "../models/movie";
 
-const MovieService = {
-    create: (item, success, fail) => {
-        MovieModel.create(item)
-            .then((data) => success(data))
-            .catch((error) => fail(error));
-    },
-    read: (item, success, fail) => {
-        const filterQuery = { _id: item.id };
+import type { IMovie } from "../models/movie";
 
-        MovieModel.find(filterQuery)
-            .then((data) => success(data))
-            .catch((error) => fail(error));
-    },
-    update: (item, success, fail) => {
-        const filterQuery = { _id: item.id };
-
-        // options { new: true } to return the updated data intead of old data
-        MovieModel.findOneAndUpdate(filterQuery, item.updatedValue, {
-            new: true,
-        })
-            .then((data) => success(data))
-            .catch((error) => fail(error));
-    },
-    delete: (item, success, fail) => {
-        const query = { _id: item.id };
-
-        MovieModel.deleteOne(query, item)
-            .then((data) => success(data))
-            .catch((error) => fail(error));
-    },
-    getAllMovies: (success, fail) => {
-        MovieModel.find({})
-            .then((data) => success(data))
-            .catch((error) => fail(error));
-    },
+const create = async (item: IMovie): Promise<IMovie> => {
+    const data = await MovieModel.create(item);
+    return data;
 };
 
-export default MovieService;
+const read = async (id: string): Promise<IMovie | null> => {
+    const data = await MovieModel.findById(id);
+    return data;
+};
+
+const update = async (id: string, updatedValue: IMovie): Promise<IMovie | null> => {
+    const filterQuery = { _id: id };
+    // options { new: true } to return the updated data intead of old data
+    const newData = await MovieModel.findOneAndUpdate(filterQuery, updatedValue, {
+        new: true,
+    });
+    return newData;
+};
+
+const deleteOne = async (id: string): Promise<string> => {
+    const query = { _id: id };
+    const response = await MovieModel.deleteOne(query);
+    if (response.deletedCount === 0) {
+        throw new NotFoundError("Movie not found");
+    }
+    return `Entry with id ${id} successfully deleted!`;
+};
+
+const getAllMovies = async (): Promise<IMovie[]> => {
+    const movies = await MovieModel.find({});
+    return movies ?? [];
+};
+
+const findByTitle = async (title: string): Promise<IMovie | null> => {
+    const data = await MovieModel.findOne({ title });
+    return data;
+};
+
+export default { create, read, update, deleteOne, getAllMovies, findByTitle };

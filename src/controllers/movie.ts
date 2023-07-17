@@ -1,66 +1,73 @@
-import { Router, type Request, type Response } from "express";
+import { Router } from "express";
 
 import movieService from "../services/movie";
 import { onlyAdminsRoute } from "../middleware/user";
-import { type IMovie } from "../models/movie";
+import BadRequestError from "../error/bad-request";
+import NotFoundError from "../error/not-found";
+import { asyncErrorHandler } from "../middleware/error";
+
+import type { Request, Response } from "express";
 
 const movieRouter = Router();
 
-function createMovie(req: Request, res: Response): void {
+const createMovie = async (req: Request, res: Response): Promise<Response> => {
     const value = req.body;
-
-    movieService.create(
-        value,
-        (data: IMovie) => res.status(200).json(data),
-        (err) => res.status(400).json(err)
-    );
-}
-
-const readMovie = (req: Request, res: Response): void => {
-    const value = req.query;
-
-    movieService.read(
-        value,
-        (data: IMovie) => res.status(200).json(data),
-        (err) => res.status(400).json(err)
-    );
+    const data = await movieService.create(value);
+    return res.status(201).json(data);
 };
 
-const updateMovie = (req: Request, res: Response): void => {
-    const value = req.body;
-
-    movieService.update(
-        value,
-        (data: IMovie) => res.status(200).json(data),
-        (err) => res.status(400).json(err)
-    );
+const readMovie = async (req: Request, res: Response): Promise<Response> => {
+    const id = req.query.id;
+    if (typeof id !== "string") {
+        throw new BadRequestError("Invalid id");
+    }
+    const data = await movieService.read(id);
+    if (!data) {
+        throw new NotFoundError("Movie not found");
+    }
+    return res.status(201).json(data);
 };
 
-const deleteMovie = (req: Request, res: Response): void => {
-    const value = req.query;
-
-    movieService.delete(
-        value,
-        () => res.status(200).json({ message: "Successfully Deleted!", deleted: true }),
-        (err) => res.status(400).json({ message: err, deleted: false })
-    );
+const updateMovie = async (req: Request, res: Response): Promise<Response> => {
+    const { id, updatedValue } = req.body;
+    const newData = await movieService.update(id, updatedValue);
+    if (!newData) {
+        throw new NotFoundError("Movie not found");
+    }
+    return res.status(201).json(newData);
 };
 
-const getAllMovies = (req: Request, res: Response): void => {
-    movieService.getAllMovies(
-        (data: IMovie[]) => {
-            res.status(200).json(data);
-        },
-        (err) => {
-            res.status(400).json({ message: err });
-        }
-    );
+const deleteMovie = async (req: Request, res: Response): Promise<Response> => {
+    const id = req.query.id;
+    if (typeof id !== "string") {
+        throw new BadRequestError("Invalid id");
+    }
+    const response = await movieService.deleteOne(id);
+    return res.status(201).json(response);
 };
 
-movieRouter.route("").post(onlyAdminsRoute, createMovie);
-movieRouter.route("").get(readMovie);
-movieRouter.route("").put(onlyAdminsRoute, updateMovie);
-movieRouter.route("").delete(onlyAdminsRoute, deleteMovie);
-movieRouter.route("/getAllMovies").get(getAllMovies);
+const getAllMovies = async (req: Request, res: Response): Promise<Response> => {
+    const response = await movieService.getAllMovies();
+    return res.status(201).json(response);
+};
+
+const findByTitle = async (req: Request, res: Response): Promise<Response> => {
+    const title = req.query.title;
+    if (typeof title !== "string") {
+        throw new BadRequestError("Invalid title");
+    }
+    const data = await movieService.findByTitle(title);
+    if (!data) {
+        throw new NotFoundError("Movie not found");
+    }
+    return res.status(201).json(data);
+};
+
+movieRouter.route("").post(onlyAdminsRoute, asyncErrorHandler(createMovie));
+movieRouter.route("").get(asyncErrorHandler(readMovie));
+movieRouter.route("").put(onlyAdminsRoute, asyncErrorHandler(updateMovie));
+movieRouter.route("").delete(onlyAdminsRoute, asyncErrorHandler(deleteMovie));
+movieRouter.route("/get-all-movies").get(asyncErrorHandler(getAllMovies));
+movieRouter.route("/find-by-title").get(asyncErrorHandler(findByTitle));
 
 export default movieRouter;

@@ -1,8 +1,7 @@
 import { model, Schema } from "mongoose";
 
-import type { Document } from "mongoose";
-
 export interface IMovie {
+    id: Schema.Types.ObjectId;
     title: string;
     description: string;
     length: number;
@@ -27,7 +26,7 @@ export interface IMovie {
     modifiedAt: Date;
 }
 
-const movieSchema = new Schema<IMovie & Document>({
+const movieSchema = new Schema<IMovie>({
     title: String,
     description: String,
     length: Number,
@@ -53,6 +52,6 @@ const movieSchema = new Schema<IMovie & Document>({
     modifiedAt: { type: Date, default: Date.now },
 });
 
-const Movie = model<IMovie & Document>("Movie", movieSchema);
+const Movie = model<IMovie>("Movie", movieSchema);
 
 export default Movie;

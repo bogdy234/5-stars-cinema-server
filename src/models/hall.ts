@@ -1,7 +1,5 @@
 import { model, Schema } from "mongoose";
 
-// import type { Document } from "mongoose";
-
 export interface IHall {
     id: Schema.Types.ObjectId;
     number: number;
