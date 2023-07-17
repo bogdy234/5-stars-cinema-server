@@ -10,7 +10,7 @@ import type { NextFunction, Request, Response } from "express";
 
 const hallRouter = Router();
 
-async function createHall(req: Request, res: Response): Promise<Response> {
+const createHall = async (req: Request, res: Response): Promise<Response> => {
     const existingHallData = await hallService.readByNumber({
         number: req.body.number,
     });
@@ -22,7 +22,7 @@ async function createHall(req: Request, res: Response): Promise<Response> {
         throw new Error("Hall not created");
     }
     return res.status(200).json(data);
-}
+};
 
 const readHall = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
     const id = req.query.id;
