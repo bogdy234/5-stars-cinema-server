@@ -5,14 +5,22 @@ import { onlyAdminsRoute } from "../middleware/user";
 import BadRequestError from "../error/bad-request";
 import NotFoundError from "../error/not-found";
 import { asyncErrorHandler } from "../middleware/error";
+import ConflictError from "../error/conflict";
 
 import type { Request, Response } from "express";
 
 const movieRouter = Router();
 
 const createMovie = async (req: Request, res: Response): Promise<Response> => {
-    const value = req.body;
-    const data = await movieService.create(value);
+    const body = req.body;
+    const existingMovie = await movieService.findByTitle(body.title);
+    if (existingMovie) {
+        throw new ConflictError("Movie with this title already exists");
+    }
+    const data = await movieService.create(body);
+    if (!data) {
+        throw new Error("Movie not created");
+    }
     return res.status(201).json(data);
 };
 

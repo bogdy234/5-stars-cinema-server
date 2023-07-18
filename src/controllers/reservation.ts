@@ -8,15 +8,10 @@ import type { Request, Response } from "express";
 
 const reservationRouter = Router();
 
-function createReservation(req: Request, res: Response): void {
-    const value = req.body;
-
-    reservationService.create(
-        value,
-        (data: IReservation) => res.status(200).json(data),
-        (err) => res.status(400).json(err)
-    );
-}
+// const createReservation = async (req: Request, res: Response): Promise<Response> => {
+// const response = reservationService.create(req.body);
+// return res.status(201).json(response);
+// };
 
 const readReservation = (req: Request, res: Response): void => {
     const value = req.query;
@@ -115,7 +110,7 @@ const findByName = (req: Request, res: Response): void => {
     );
 };
 
-reservationRouter.route("").post(createReservation);
+// reservationRouter.route("").post(createReservation);
 reservationRouter.route("").get(readReservation);
 reservationRouter.route("").put(updateReservation);
 reservationRouter.route("").delete(deleteReservation);

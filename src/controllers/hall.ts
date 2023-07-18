@@ -5,12 +5,21 @@ import { onlyAdminsRoute } from "../middleware/user";
 import { asyncErrorHandler } from "../middleware/error";
 import ConflictError from "../error/conflict";
 import NotFoundError from "../error/not-found";
+import BadRequestError from "../error/bad-request";
 
 import type { NextFunction, Request, Response } from "express";
 
 const hallRouter = Router();
 
 const createHall = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.body.number) {
+        throw new BadRequestError("You need to provide a hall number");
+    }
+
+    if (!req.body.seats) {
+        throw new BadRequestError("You need to provide number of seats");
+    }
+
     const existingHallData = await hallService.readByNumber({
         number: req.body.number,
     });
