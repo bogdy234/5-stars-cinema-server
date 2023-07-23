@@ -2,115 +2,111 @@ import { Router } from "express";
 
 import reservationService from "../services/reservation";
 import { onlyAdminsRoute } from "../middleware/user";
+import BadRequestError from "../error/bad-request";
+import NotFoundError from "../error/not-found";
 
-import type { IReservation } from "../models/reservation";
 import type { Request, Response } from "express";
 
 const reservationRouter = Router();
 
-// const createReservation = async (req: Request, res: Response): Promise<Response> => {
-// const response = reservationService.create(req.body);
-// return res.status(201).json(response);
-// };
+const createReservation = async (req: Request, res: Response): Promise<Response> => {
+    const newReservation = reservationService.create(req.body);
 
-const readReservation = (req: Request, res: Response): void => {
-    const value = req.query;
+    // TODO: check if there are any existing reservation for the user to the same movie
 
-    reservationService.read(
-        value,
-        (data: IReservation) => res.status(200).json(data),
-        (err) => res.status(400).json(err)
-    );
+    if (!newReservation) {
+        throw new Error("Reservation not created");
+    }
+
+    return res.status(201).json(newReservation);
 };
 
-const updateReservation = (req: Request, res: Response): void => {
-    const value = req.body;
+const readReservation = async (req: Request, res: Response): Promise<Response> => {
+    const id = req.query.id;
 
-    reservationService.update(
-        value,
-        (data: IReservation) => res.status(200).json(data),
-        (err) => res.status(400).json(err)
-    );
+    if (typeof id !== "string") {
+        throw new BadRequestError("Invalid id");
+    }
+
+    const reservation = await reservationService.read(id);
+
+    if (!reservation) {
+        throw new NotFoundError("Reservation with provided id not found");
+    }
+
+    return res.status(200).json(reservation);
 };
 
-const deleteReservation = (req: Request, res: Response): void => {
-    const value = req.query;
+const updateReservation = async (req: Request, res: Response): Promise<Response> => {
+    const { id, updatedValue } = req.body;
 
-    reservationService.delete(
-        value,
-        () => res.status(200).json({ message: "Successfully Deleted!", deleted: true }),
-        (err) => res.status(400).json({ message: err, deleted: false })
-    );
+    const updatedReservation = await reservationService.update(id, updatedValue);
+    if (!updateReservation) {
+        throw new Error("Reservation not updated");
+    }
+
+    return res.status(200).json(updatedReservation);
 };
 
-const getAllReservations = (req: Request, res: Response): void => {
-    reservationService.getAllReservations(
-        (data: IReservation[]) => {
-            res.status(200).json(data);
-        },
-        (err) => {
-            res.status(400).json({ message: err });
-        }
-    );
+const deleteReservation = async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.query;
+    if (typeof id !== "string") {
+        throw new BadRequestError("You provided the wrong data");
+    }
+
+    const response = await reservationService.deleteOne(id);
+
+    return res.status(200).json(response);
 };
 
-const getUserReservations = (req: Request, res: Response): void => {
-    const item = req.query;
+const getAllReservations = async (req: Request, res: Response): Promise<Response> => {
+    const reservations = await reservationService.getAllReservations();
 
-    reservationService.getUserReservations(
-        item,
-        (data: IReservation) => {
-            res.status(200).json(data);
-        },
-        (err) => {
-            res.status(400).json({ message: err });
-        }
-    );
+    return res.status(200).json(reservations);
 };
 
-const getMovieReservations = (req: Request, res: Response): void => {
-    const item = req.body;
+const getUserReservations = async (req: Request, res: Response): Promise<Response> => {
+    const { userId } = req.query;
+    if (typeof userId !== "string") {
+        throw new BadRequestError("You provided the wrong data");
+    }
 
-    reservationService.getMovieReservations(
-        item,
-        (data) => {
-            res.status(200).json(data);
-        },
-        (err) => {
-            res.status(400).json({ message: err });
-        }
-    );
+    const userReservations = await reservationService.getUserReservations(userId);
+
+    return res.status(200).json(userReservations);
 };
 
-const getReservedSeats = (req: Request, res: Response): void => {
-    const item = req.query;
+const getMovieReservations = async (req: Request, res: Response): Promise<Response> => {
+    const { movieId, hallId, movieTiming } = req.body;
 
-    reservationService.getReservedSeats(
-        item,
-        (data) => {
-            res.status(200).json(data);
-        },
-        (err) => {
-            res.status(400).json({ message: err });
-        }
-    );
+    const reservations = await reservationService.getMovieReservations(movieId, hallId, movieTiming);
+
+    return res.status(200).json(reservations);
 };
 
-const findByName = (req: Request, res: Response): void => {
-    const item = req.query;
+const getReservedSeats = async (req: Request, res: Response): Promise<Response> => {
+    const { movieId, hallId, movieTiming } = req.query;
 
-    reservationService.findByName(
-        item,
-        (data) => {
-            res.status(200).json(data);
-        },
-        (err) => {
-            res.status(400).json({ message: err });
-        }
-    );
+    if (typeof movieId !== "string" || typeof hallId !== "string" || typeof movieTiming !== "string") {
+        throw new BadRequestError("You provided the wrong data");
+    }
+    const reservedSeats = reservationService.getReservedSeats(movieId, hallId, movieTiming);
+
+    return res.status(200).json(reservedSeats);
 };
 
-// reservationRouter.route("").post(createReservation);
+const findByName = async (req: Request, res: Response): Promise<Response> => {
+    const { firstName, lastName } = req.query;
+    if (typeof firstName !== "string" || typeof lastName !== "string") {
+        throw new BadRequestError("You provided the wrong data");
+    }
+
+    const reservation = await reservationService.findByName(firstName, lastName);
+
+    return res.status(200).json(reservation);
+};
+
+reservationRouter.route("").post(createReservation);
 reservationRouter.route("").get(readReservation);
 reservationRouter.route("").put(updateReservation);
 reservationRouter.route("").delete(deleteReservation);

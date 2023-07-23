@@ -33,7 +33,7 @@ const readMovie = async (req: Request, res: Response): Promise<Response> => {
     if (!data) {
         throw new NotFoundError("Movie not found");
     }
-    return res.status(201).json(data);
+    return res.status(200).json(data);
 };
 
 const updateMovie = async (req: Request, res: Response): Promise<Response> => {
@@ -42,7 +42,7 @@ const updateMovie = async (req: Request, res: Response): Promise<Response> => {
     if (!newData) {
         throw new NotFoundError("Movie not found");
     }
-    return res.status(201).json(newData);
+    return res.status(200).json(newData);
 };
 
 const deleteMovie = async (req: Request, res: Response): Promise<Response> => {
@@ -51,12 +51,12 @@ const deleteMovie = async (req: Request, res: Response): Promise<Response> => {
         throw new BadRequestError("Invalid id");
     }
     const response = await movieService.deleteOne(id);
-    return res.status(201).json(response);
+    return res.status(200).json(response);
 };
 
 const getAllMovies = async (req: Request, res: Response): Promise<Response> => {
     const response = await movieService.getAllMovies();
-    return res.status(201).json(response);
+    return res.status(200).json(response);
 };
 
 const findByTitle = async (req: Request, res: Response): Promise<Response> => {
@@ -68,7 +68,7 @@ const findByTitle = async (req: Request, res: Response): Promise<Response> => {
     if (!data) {
         throw new NotFoundError("Movie not found");
     }
-    return res.status(201).json(data);
+    return res.status(200).json(data);
 };
 
 movieRouter.route("").post(onlyAdminsRoute, asyncErrorHandler(createMovie));
