@@ -2,6 +2,8 @@ import { Router, type Request, type Response } from "express";
 
 import userHelpers from "../helpers/user";
 import userService from "../services/user";
+import { removeProperties } from "../helpers";
+import { IUser } from "../models/user";
 
 const userRouter = Router();
 
@@ -63,20 +65,13 @@ const loginUser = async (req: Request, res: Response): Promise<Response> => {
         });
 };
 
-// const registerUser = (req: Request, res: Response): void => {
-//     const value = req.body;
+const registerUser = async (req: Request, res: Response): Promise<Response> => {
+    const value = req.body;
 
-//     void userService.create(
-//         value,
-//         () => res.status(200).json({ message: "Register successfully!", valid: true }),
-//         (error) =>
-//             res.status(400).json({
-//                 message: "Registration failed! Please try again later.",
-//                 valid: false,
-//                 error,
-//             })
-//     );
-// };
+    const { password, ...userDataWithoutPass } = await userService.create(value);
+
+    return res.status(200).json(userDataWithoutPass);
+};
 
 // const sendContactEmail = (req: Request, res: Response): void => {
 //     const value = req.body;
@@ -101,7 +96,7 @@ const loginUser = async (req: Request, res: Response): Promise<Response> => {
 // });
 // userRouter.route("").delete(deleteUser);
 userRouter.route("/login").post(loginUser);
-// userRouter.route("/register").post(registerUser);
+userRouter.route("/register").post(registerUser);
 // userRouter.route("/contact").post(sendContactEmail);
 // userRouter.route("/findByName").post(findByName);
 
